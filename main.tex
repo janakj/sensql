@@ -35,7 +35,7 @@
 %    - Abstract: January 18, 2021 ( https://edas.info/newPaper.php?c=27882)
 %    - Paper: January 25, 2021
 %  * Guidelines:
-%    - 8 pages maximum (2 additional for appendices, theorems, implementation)
+%    - 8 pages maximum (2 additional at $100/page for appendices, theorems, implementation)
 %    - single-blind review
 
 \hypersetup{
@@ -53,11 +53,11 @@
 
 \author{
   \IEEEauthorblockN{
-    \href{mailto:janakj@cs.columbia.edu}{\color{black}Jan Janak}\IEEEauthorrefmark{1},
-    \href{mailto:hgs@cs.columbia.edu}{\color{black}Henning Schulzrinne}\IEEEauthorrefmark{1}
+    \href{mailto:janakj@cs.columbia.edu}{\color{black}Jan Janak},
+    \href{mailto:hgs@cs.columbia.edu}{\color{black}Henning Schulzrinne}
   }
   \IEEEauthorblockA{
-    \IEEEauthorrefmark{1}Department of Computer Science, Columbia University, USA
+    Department of Computer Science, Columbia University, New York, USA
   }
   Email: \{janakj,hgs\}@cs.columbia.edu
 }
@@ -70,8 +70,12 @@
 \section{Introduction}
 \label{sec:introduction}
 
+Many Internet of Things (IoT) devices include sensors that produce measurements. Where are the measurements stored and how does an application query such data? In this paper, we propose a SQL-based distributed storage and query processing system for IoT applications.
+
 \section{Related Work}
 \label{sec:related-work}
+
+The use of SQL was explored in the context of Wireless Sensor Networks (WSN).
 
 \nocite{madden2005tinydb}
 \nocite{madden2002supporting}
@@ -80,6 +84,7 @@
 \nocite{rfc5222}
 \nocite{rfc5582}
 \nocite{rfc5012}
+\nocite{rfc8428}
 
 \bibliographystyle{IEEEtran}
 \bibliography{bibs/references,bibs/rfc}
