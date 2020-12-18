@@ -1,0 +1,86 @@
+\documentclass[conference,10pt]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage[utf8]{inputenc}
+\usepackage{lastpage}
+\usepackage{mathptmx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{array}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{flushend}
+\usepackage{cite}
+\usepackage{algorithmic}
+\usepackage[caption=false]{subfig}
+\usepackage{hyperref}
+\usepackage{microtype}
+
+\def\UrlBreaks{\do\/\do-}
+
+\newcommand{\papertitle}{SenSQL}
+
+% Potential venues:
+%
+% IFIP Networking 2021 (~ 23\%)
+%  * Deadlines:
+%    - Abstract: January 5, 2021 (https://edas.info/N27861)
+%    - Paper: January 12, 2012
+%  * Guidelines:
+%    - 9 pages maximum
+%    - double-blind review
+%
+% IEEE DCOSS 2021 (~ 25-30\%)
+%  * Deadlines:
+%    - Abstract: January 18, 2021 ( https://edas.info/newPaper.php?c=27882)
+%    - Paper: January 25, 2021
+%  * Guidelines:
+%    - 8 pages maximum (2 additional for appendices, theorems, implementation)
+%    - single-blind review
+
+\hypersetup{
+  colorlinks=true,% Color URLs with urlcolor
+  linkcolor=black,% The color for internal (cross-reference) links
+  urlcolor=blue,% The color for URLs (hyperlinks)
+  citecolor=black,
+  pdftitle={\papertitle}
+}
+
+\urlstyle{same}
+
+\begin{document}
+\title{\papertitle}
+
+\author{
+  \IEEEauthorblockN{
+    \href{mailto:janakj@cs.columbia.edu}{\color{black}Jan Janak}\IEEEauthorrefmark{1},
+    \href{mailto:hgs@cs.columbia.edu}{\color{black}Henning Schulzrinne}\IEEEauthorrefmark{1}
+  }
+  \IEEEauthorblockA{
+    \IEEEauthorrefmark{1}Department of Computer Science, Columbia University, USA
+  }
+  Email: \{janakj,hgs\}@cs.columbia.edu
+}
+
+\maketitle
+
+\begin{abstract}
+\end{abstract}
+
+\section{Introduction}
+\label{sec:introduction}
+
+\section{Related Work}
+\label{sec:related-work}
+
+\nocite{madden2005tinydb}
+\nocite{madden2002supporting}
+\nocite{bacon2017spanner}
+\nocite{sun2010querying}
+\nocite{rfc5222}
+\nocite{rfc5582}
+\nocite{rfc5012}
+
+\bibliographystyle{IEEEtran}
+\bibliography{bibs/references,bibs/rfc}
+\end{document}
