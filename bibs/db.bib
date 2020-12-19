@@ -1,0 +1,174 @@
+%%
+%% Databases and Data Processing, e.g.,
+%%   - Graph, time-series, and semantic data
+%%   - Spatial operations
+%%
+
+@TechReport{borrman08:topo,
+  author   = {Borrman, Andre and Rank, Ernst},
+  title	   = {{Topological Operators in a 3D Spatial Query Language for
+    Building Information Models}},
+  institution= {Computation in Engineering, TU Munich},
+  year	   = 2008,
+}
+
+@TechReport{horridge06:manchester,
+  author   = {Horridge, Matthew and Drummond, Nick and Goodwin, John and
+    Rector, Alan L and Stevens, Robert and Wang, Hai},
+  title	   = {{The Manchester OWL Syntax}},
+  institution= {The University of Manchester},
+  year	   = 2006,
+  abstract = {This paper describes a new syntax that can be used to write OWL
+    ontologies, and fragments of OWL ontologies for presentation and editing
+    purposes. The syntax, which is known as the Manchester OWL Syntax, was
+    developed in response to a demand from a wide range of users, who do not
+    have a Description Logic background, for a“less logician like” syntax. The
+    Manchester OWL Syntax is derived from the OWL Abstract Syntax, but is less
+    verbose and minimises the use of brackets. This means that it is quick and
+    easy to read and write. The important features of the syntax are
+    discussed, and a reference implementation of a Java based parser is
+    described.},
+}
+
+
+@InProceedings{tsiftes11:sensordb,
+  author   = {Tsiftes, Nicolas and Dunkels, Adam},
+  title	   = {A Database in Every Sensor},
+  booktitle= {Proceedings of the 9th ACM Conference on Embedded Networked
+    Sensor Systems},
+  year	   = 2011,
+  series   = {SenSys '11},
+  pages	   = {316-332},
+  address  = {New York, NY, USA},
+  publisher= {ACM},
+  isbn	   = {978-1-4503-0718-5},
+  location = {Seattle, Washington},
+  numpages = 17,
+  url	   = {http://doi.acm.org/10.1145/2070942.2070974},
+  doi	   = {10.1145/2070942.2070974},
+  acmid	   = 2070974,
+  keywords = {antelope, database, energy efficiency, sensor network},
+  abstract = {We make the case for a sensor network model in which each mote
+    stores sensor data locally, and provides a database query interface to the
+    data. Unlike TinyDB and Cougar, in which a sink node provides a
+    database-like front end for filtering the current sensor values from a
+    data collection network, we propose that each sensor device should run its
+    own database system. We present Antelope, a database management system for
+    resource-constrained sensors. Antelope provides a dynamic database system
+    that enables run-time creation and deletion of databases and indexes.
+    Antelope uses energy-efficient indexing techniques that significantly
+    improve the performance of queries. The energy cost of a query that
+    selects 100 tuples is less than the cost of a single packet transmission.
+    Moving forward, we believe that database techniques will be increasingly
+    important in many emerging applications.},
+}
+
+
+@InProceedings{geambasu10:comet,
+  author   = {Geambasu, Roxana and Levy, Amit A and Kohno, Tadayoshi and
+    Krishnamurthy, Arvind and Levy, Henry M},
+  title	   = {Comet: An active distributed key-value store.},
+  booktitle= {OSDI},
+  year	   = 2010,
+  pages	   = {323-336},
+  abstract = {Distributed key-value storage systems are widely used in
+    corporations and across the Internet. Our research seeks to greatly expand
+    the application space for key-value storage systems through
+    application-specific customization. We designed and implemented Comet, an
+    extensible, distributed key-value store. Each Comet node stores a
+    collection of active storage objects (ASOs) that consist of a key, a
+    value, and a set of handlers. Comet handlers run as a result of timers or
+    storage operations, such as get or put, allowing an ASO to take dynamic,
+    application-specific actions to customize its behavior. Handlers are
+    written in a simple sandboxed extension language, providing properties of
+    safety and isolation. We implemented a Comet prototype for the Vuze DHT,
+    deployed Comet nodes on Vuze from PlanetLab, and built and evaluated over
+    a dozen Comet applications. Our experience demonstrates that simple, safe,
+    and restricted extensibility can significantly increase the power and
+    range of applications that can run on distributed active storage systems.
+    This approach facilitates the sharing of a single storage system by
+    applications with diverse needs, allowing them to reap the consolidation
+    benefits inherent in today’s massive clouds.},
+}
+
+
+@InProceedings {shaull14:retro,
+  author   = {Ross Shaull and Liuba Shrira and Barbara Liskov},
+  title	   = {A Modular and Efficient Past State System for Berkeley DB},
+  booktitle= {2014 USENIX Annual Technical Conference (USENIX ATC 14)},
+  year	   = 2014,
+  pages	   = {157-168},
+  month	   = Jun,
+  address  = {Philadelphia, PA},
+  publisher= {USENIX Association},
+  isbn	   = {978-1-931971-10-2},
+  url	   =
+    {https://www.usenix.org/conference/atc14/technical-sessions/presentation/shaull},
+  abstract = {Applications often need to analyze past states to predict trends
+    and support audits. Adding efficient and nondisruptive support for
+    consistent past-state analysis requires after-the-fact modification of the
+    data store, a significant challenge for today’s systems. This paper
+    describes Retro, a new system for supporting consistent past state
+    analysis in Berkeley DB. The key novelty of Retro is an efficient yet
+    simple and robust implementation method, imposing 4\% worst-case overhead.
+    Unlike prior approaches, Retro protocols, backed by a formal
+    specification, extend standard transaction protocols in a modular way,
+    requiring minimal data store modification (about 250 lines of BDB code).},
+}
+
+
+@InProceedings {bronson13:tao,
+  author   = {Nathan Bronson and Zach Amsden and George Cabrera and Prasad
+    Chakka and Peter Dimov and Hui Ding and Jack Ferris and Anthony Giardullo
+    and Sachin Kulkarni and Harry Li and Mark Marchukov and Dmitri Petrov and
+    Lovro Puzar and Yee Jiun Song and Venkat Venkataramani},
+  title	   = {TAO: Facebook{\textquoteright}s Distributed Data Store for the
+    Social Graph},
+  booktitle= {Presented as part of the 2013 USENIX Annual Technical Conference
+    (USENIX ATC 13)},
+  year	   = 2013,
+  pages	   = {49-60},
+  address  = {San Jose, CA},
+  publisher= {USENIX},
+  isbn	   = {978-1-931971-01-0},
+  url	   =
+    {https://www.usenix.org/conference/atc13/technical-sessions/presentation/bronson},
+  abstract = {We introduce a simple data model and API tailored for serving
+    the social graph, and TAO, an implementation of this model. TAO is a
+    geographically distributed data store that provides efficient and timely
+    access to the social graph for Facebook’s demanding workload using a fixed
+    set of queries. It is deployed at Facebook, replacing memcache for many
+    data types that fit its model. The system runs on thousands of machines,
+    is widely distributed, and provides access to many petabytes of data. TAO
+    can process a billion reads and millions of writes each second.},
+}
+
+
+@InProceedings{gupta14:bolt,
+  author   = {Trinabh Gupta and Rayman Preet Singh and Amar Phanishayee and
+    Jaeyeon Jung and Ratul Mahajan},
+  title	   = {Bolt: Data Management for Connected Homes},
+  booktitle= {Proceedings of the 11th {USENIX} Symposium on Networked Systems
+    Design and Implementation, {NSDI} 2014, Seattle, WA, USA, April 2-4, 2014},
+  year	   = 2014,
+  pages	   = {243-256},
+  timestamp= {Wed, 01 Oct 2014 16:44:22 +0200},
+  biburl   = {http://dblp.uni-trier.de/rec/bib/conf/nsdi/GuptaSPJM14},
+  bibsource= {dblp computer science bibliography, http://dblp.org},
+  abstract = {We present Bolt, a data management system for an emerging class
+    of applications—those that manipulate data from connected devices in the
+    home. It abstracts this data as a stream of time-tag-value records, with
+    arbitrary, application-defined tags. For reliable sharing among
+    applications, some of which may be running outside the home, Bolt uses
+    untrusted cloud storage as seamless extension of local storage. It
+    organizes data into chunks that contains multiple records and are
+    individually compressed and encrypted. While chunking enables efficient
+    transfer and storage, it also implies that data is retrieved at the
+    granularity of chunks, instead of records. We show that the resulting
+    overhead, however, is small because applications in this domain frequently
+    query for multiple proximate records. We develop three diverse
+    applications on top of Bolt and find that the performance needs of each
+    are easily met. We also find that compared to OpenTSDB, a popular
+    time-series database system, Bolt is up to 40 times faster than OpenTSDB
+    while requiring 3–5 times less storage space.},
+}
