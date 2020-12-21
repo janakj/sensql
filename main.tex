@@ -183,6 +183,14 @@ To alleviate the need for the ISSD to process complex spatial objects, the SQL p
 \section{Event Notification}
 \section{sec:event-notification}
 
+\section{Conclusion}
+\label{sec:conclusion}
+
+\subsection{Future Work}
+\label{sec:future-work}
+
+Similar basic mechanism could work for updating some kinds of actuators (via SQL \textit{UPDATE}). Particularly, the reliability of the updates could be justified in the face of conflicts or failing actuator updates. The ACID semantics might be useful, or a model similar to \href{https://dl.acm.org/doi/pdf/10.1145/2491245}{Google Spanner}.
+
 \bibliographystyle{IEEEtran}
 \bibliography{bibs/references,bibs/rfc,bibs/db}
 \end{document}
