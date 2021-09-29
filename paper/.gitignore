@@ -6,5 +6,8 @@
 *.synctex.gz
 *.fdb_latexmk
 *.out
+*.ent
+*.glsdefs
 /main.pdf
 /_minted-main
+.DS_Store
