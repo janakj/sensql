@@ -1,0 +1,18 @@
+version: "3.7"
+services:
+  presto:
+    container_name: presto
+    image: ghcr.io/janakj/sensql/presto
+    restart: unless-stopped
+    ports:
+    - "80:80/tcp"
+
+  proxy-db:
+    container_name: proxy-db
+    image: ghcr.io/janakj/sensql/proxy-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ikebana
+      PGDATA: /var/lib/postgresql/data/pgdata
+    command: ["postgres", "-c", "log_statement=all"]
+
