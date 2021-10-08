@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+  node1:
+    image: ghcr.io/janakj/sensql/node-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ikebana
+      PGDATA: /var/lib/postgresql/data/pgdata
+      NODE_NUMBER: 1
+    command: ["postgres", "-c", "log_statement=all"]
+
+  node2:
+    image: ghcr.io/janakj/sensql/node-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ikebana
+      PGDATA: /var/lib/postgresql/data/pgdata
+      NODE_NUMBER: 2 
+    command: ["postgres", "-c", "log_statement=all"]
