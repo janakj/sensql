@@ -4,14 +4,16 @@
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 
-import paho.mqtt.client as mqtt
-from random import randrange, uniform, choice
 import time
 import math
 import datetime
 import json
-from uuid import uuid4
 import re
+import sched
+import schedule
+import paho.mqtt.client as mqtt
+from uuid import uuid4
+from random import randrange, uniform, choice
 
 mqttBroker ="mqtt.eclipseprojects.io"
 
@@ -103,14 +105,37 @@ def test_get_coordinates():
 
 def test_get_rand_uuid():
     temp = str(get_rand_uuid(4)[0])
-    print(temp)
     assert re.match('\w{8}-\w{4}-\w{4}-\w{4}-\w{12}', temp), "Should match"
+
+
+def publish(payload):
+    client.publish("morningside_heights/main_db", payload)
+    print("Just published " + str(payload) + " to topic morningside_heights/main_db")
+
+
+def print_time(a='default'):
+    print("From print_time", time.time(), a)
+
+
+def schedule_wrapper(interval):
+    schedule.every(interval).seconds.do(print_time, '1sec')
+
+
+def schedule_devices(num_devices, publish_freq, rand_offset_float):
+    s = sched.scheduler(time.time, time.sleep)
+    for x in range(num_devices):
+        rand_offset = uniform(0, rand_offset_float)
+        s.enter(rand_offset, 1, schedule_wrapper, argument=(publish_freq,))
+    s.run()  # run sched for offset start
+    while True:
+        schedule.run_pending()  # run schedule for repeated calls
 
 
 if __name__ == '__main__':
     test_get_start_coord()
     test_get_coordinates()
     test_get_rand_uuid()
+    schedule_devices(50, 1, 5.0)
     print("Unit tests passed")
 
     num_devices, num_dbs, lat_min, lat_max, lon_min, lon_max = user_inputs()
