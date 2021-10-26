@@ -1,9 +1,3 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
 import time
 import math
 import datetime
@@ -15,10 +9,9 @@ import paho.mqtt.client as mqtt
 from uuid import uuid4
 from random import randrange, uniform, choice
 
-mqttBroker ="mqtt.eclipseprojects.io"
-
-client = mqtt.Client("sensor_1")
-client.connect(mqttBroker)
+MQTT_BROKER = "mqtt.eclipseprojects.io"
+CLIENT_NAME = "sensor_1"
+latitudes_arr = longitudes_arr = device_id_arr = []  # global arr
 
 
 def user_inputs():
@@ -27,8 +20,8 @@ def user_inputs():
         try:
             temp = input("Enter number of devices: ")
             if temp == 'test':
-                num_devices_inp = 2
-                num_databases_inp = 1
+                num_devices_inp = 10000
+                num_databases_inp = 100
                 lat_min_inp = 40.802047
                 lat_max_inp = 40.817930
                 lon_min_inp = -73.970704
@@ -60,7 +53,7 @@ def get_start_coord(num_devices_temp, lat_min_temp, lat_max_temp, lon_min_temp, 
     lon_diff = lon_max_temp - lon_min_temp
     area = abs(lat_diff * lon_diff)
     area_per_device = area / num_devices_temp
-    side_of_square_per_device = round(math.sqrt(area_per_device),2)
+    side_of_square_per_device = round(math.sqrt(area_per_device), 8)
     lat_start = lat_min_temp + side_of_square_per_device / 2
     lon_start = lon_min_temp + side_of_square_per_device / 2
     return lat_start, lon_start, side_of_square_per_device
@@ -71,15 +64,16 @@ def get_coordinates(num_devices_calc, lat_min_calc, lat_max_calc, lon_min_calc, 
     lat_start_temp, lon_start_temp, offset = get_start_coord(num_devices_calc,
                                                  lat_min_calc, lat_max_calc, lon_min_calc, lon_max_calc)
     lat_temp, lon_temp = lat_start_temp, lon_start_temp
-    latitudes_arr, longitudes_arr = [], []
+    latitudes, longitudes = [], []
     while lon_temp <= lon_max_calc:
         while lat_temp <= lat_max_calc:
-            latitudes_arr.append(round(lat_temp, 8))
-            longitudes_arr.append(round(lon_temp, 8))
+            latitudes.append(round(lat_temp, 8))
+            longitudes.append(round(lon_temp, 8))
             lat_temp += offset
         lat_temp = lat_start_temp
         lon_temp += offset
-    return latitudes_arr, longitudes_arr
+    new_num_devices = len(latitudes)
+    return latitudes, longitudes, new_num_devices
 
 
 def get_rand_uuid(n):
@@ -97,10 +91,12 @@ def test_get_start_coord():
 
 def test_get_coordinates():
     assert get_coordinates(10, 40.8000, 40.9000, -74.0500, -73.9500) == \
-           ([40.815, 40.845, 40.875, 40.815, 40.845, 40.875, 40.815, 40.845, 40.875],
-               [-74.035, -74.035, -74.035, -74.005, -74.005, -74.005, -73.975, -73.975, -73.975]), \
-           "Should be ([40.815, 40.845, 40.875, 40.815, 40.845, 40.875, 40.815, 40.845, 40.875], " \
-           "[-74.035, -74.035, -74.035, -74.005, -74.005, -74.005, -73.975, -73.975, -73.975])"
+           ([40.81581139, 40.84743417, 40.87905695, 40.81581139, 40.84743417, 40.87905695, 40.81581139, 40.84743417,
+                40.87905695], [-74.03418861, -74.03418861, -74.03418861, -74.00256583, -74.00256583, -74.00256583,
+                               -73.97094305, -73.97094305, -73.97094305], 9), \
+           "Should be ([40.81581139, 40.84743417, 40.87905695, 40.81581139, 40.84743417, 40.87905695, 40.81581139, " \
+           "40.84743417, 40.87905695], [-74.03418861, -74.03418861, -74.03418861, -74.00256583, -74.00256583, " \
+           "-74.00256583, -73.97094305, -73.97094305, -73.97094305], 9)"
 
 
 def test_get_rand_uuid():
@@ -108,24 +104,48 @@ def test_get_rand_uuid():
     assert re.match('\w{8}-\w{4}-\w{4}-\w{4}-\w{12}', temp), "Should match"
 
 
-def publish(payload):
-    client.publish("morningside_heights/main_db", payload)
-    print("Just published " + str(payload) + " to topic morningside_heights/main_db")
+def generate_payload(dev_index):
+    rand_aqi = uniform(20, 30)
+    rand_temp = uniform(65, 70)
+    rand_humidity = uniform(65, 75)
+    rand_cloudy = choice(['yes', 'no'])
+    timestamp = datetime.datetime.now()
+    data = {}
+    data["deviceId"] = device_id_arr[dev_index]
+    data["aqi"] = rand_aqi
+    data['temperature'] = rand_temp
+    data['humidity'] = rand_humidity
+    data['cloudy'] = rand_cloudy
+    location = {}
+    location["latitude"] = latitudes_arr[dev_index]
+    location["longitude"] = longitudes_arr[dev_index]
+    data["location"] = location
+    data["timestamp"] = timestamp.strftime("%m/%d/%Y, %H:%M:%S")
+
+    return json.dumps(data)  # encode object to JSON
 
 
-def print_time(a='default'):
-    print("From print_time", time.time(), a)
+def publish(idx):
+    data_out = generate_payload(idx)
+    db_idx = idx // num_dbs
+    topic = "morningside_heights/db" + str(db_idx)
+    client.publish(topic, data_out)
+    print("Just published " + str(data_out) + " to topic " + topic)
 
 
-def schedule_wrapper(interval):
-    schedule.every(interval).seconds.do(print_time, '1sec')
+# helper function for schedule devices to specify what function to run and frequency
+def schedule_helper(freq, idx):
+    schedule.every(freq).seconds.do(publish, idx)
 
 
-def schedule_devices(num_devices, publish_freq, rand_offset_float):
+# schedule n devices to run at frequency f and random offset from 0 to offset_max
+def schedule_devices(n, f, offset_max):
     s = sched.scheduler(time.time, time.sleep)
-    for x in range(num_devices):
-        rand_offset = uniform(0, rand_offset_float)
-        s.enter(rand_offset, 1, schedule_wrapper, argument=(publish_freq,))
+    dev_idx = 0  # to keep track of current device being scheduled
+    for x in range(n):
+        rand_offset = uniform(0.0, offset_max)
+        s.enter(rand_offset, 1, schedule_helper, argument=(f, dev_idx,))
+        dev_idx += 1
     s.run()  # run sched for offset start
     while True:
         schedule.run_pending()  # run schedule for repeated calls
@@ -135,41 +155,14 @@ if __name__ == '__main__':
     test_get_start_coord()
     test_get_coordinates()
     test_get_rand_uuid()
-    schedule_devices(50, 1, 5.0)
     print("Unit tests passed")
 
     num_devices, num_dbs, lat_min, lat_max, lon_min, lon_max = user_inputs()
-    latitudes, longitudes = get_coordinates(num_devices, lat_min, lat_max, lon_min, lon_max)
+    latitudes_arr, longitudes_arr, num_devices = get_coordinates(num_devices, lat_min, lat_max, lon_min, lon_max)
     device_id_arr = get_rand_uuid(num_devices)
-    device_idx = 0
 
-    while True:
-        randAqi = uniform(20, 30)
-        randTemp = uniform(65, 70)
-        randHumidity = uniform(65, 75)
-        randCloudy = choice(['yes', 'no'])
-        timestamp = datetime.datetime.now()
-
-        data = {}
-        data["deviceId"] = device_id_arr[device_idx]
-        data["aqi"] = randAqi
-        data['temperature'] = randTemp
-        data['humidity'] = randHumidity
-        data['cloudy'] = randCloudy
-        location = {}
-        location["latitude"] = latitudes[device_idx]
-        location["longitude"] = longitudes[device_idx]
-        data["location"] = location
-        data["timestamp"] = timestamp.strftime("%m/%d/%Y, %H:%M:%S")
-        if device_idx+1 < num_devices:
-            device_idx += 1
-        else:
-            device_idx = 0
-
-        data_out = json.dumps(data)  # encode object to JSON
-
-        client.publish("morningside_heights/main_db", data_out)
-        print("Just published " + str(data_out) + " to topic morningside_heights/main_db")
-        time.sleep(1)
+    client = mqtt.Client(CLIENT_NAME)
+    client.connect(MQTT_BROKER)
+    schedule_devices(num_devices, 5, 5.0)
 
     # See PyCharm help at https://www.jetbrains.com/help/pycharm/

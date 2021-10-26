@@ -26,7 +26,7 @@ client.connect(mqttBroker)
 
 client.loop_start()
 
-client.subscribe("morningside_heights/main_db")
+client.subscribe("morningside_heights/db1")
 client.on_message=on_message
 
 time.sleep(30)
