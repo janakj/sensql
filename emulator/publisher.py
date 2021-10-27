@@ -21,7 +21,7 @@ def user_inputs():
             temp = input("Enter number of devices: ")
             if temp == 'test':
                 num_devices_inp = 10000
-                num_databases_inp = 100
+                num_databases_inp = 10
                 lat_min_inp = 40.802047
                 lat_max_inp = 40.817930
                 lon_min_inp = -73.970704
@@ -105,9 +105,9 @@ def test_get_rand_uuid():
 
 
 def generate_payload(dev_index):
-    rand_aqi = uniform(20, 30)
-    rand_temp = uniform(65, 70)
-    rand_humidity = uniform(65, 75)
+    rand_aqi = int(uniform(20, 30))
+    rand_temp = int(uniform(65, 70))
+    rand_humidity = int(uniform(65, 75))
     rand_cloudy = choice(['yes', 'no'])
     timestamp = datetime.datetime.now()
     data = {}
@@ -127,7 +127,8 @@ def generate_payload(dev_index):
 
 def publish(idx):
     data_out = generate_payload(idx)
-    db_idx = idx // num_dbs
+    devices_per_db = num_devices // num_dbs
+    db_idx = (idx // devices_per_db) + 1
     topic = "morningside_heights/db" + str(db_idx)
     client.publish(topic, data_out)
     print("Just published " + str(data_out) + " to topic " + topic)

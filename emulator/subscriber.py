@@ -1,33 +1,36 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-import paho.mqtt.client as mqtt
 import time
 import json
+import re
+import paho.mqtt.client as mqtt
+from database_services.functions import insert_row
+
+CLIENT_NAME = "Client"
+MQTT_BROKER = "mqtt.eclipseprojects.io"
+
 
 def on_message(client, userdata, message):
-    m_decode = str(message.payload.decode("utf-8"))
-    record_list = json.loads(m_decode)  # decode json data
-    if type(record_list) == list:
-        first_record = record_list[0]
-        # get the column names from the first record
-        columns = list(first_record.keys())
-        print("\ncolumn names:", columns)
-    print(record_list)
+    db_name = re.search('db[0-9]+', message.topic).group(0)
+    json_dict = json.loads(message.payload)
+    uuid = json_dict['deviceId']
+    aqi = json_dict['aqi']
+    temp = json_dict['temperature']
+    humidity = json_dict['humidity']
+    cloudy = json_dict['cloudy']
+    location_dict = json_dict['location']
+    lat = location_dict['latitude']
+    lon = location_dict['longitude']
+    time_data = json_dict['timestamp']
+    print("Data:", message.payload)
+    insert_row(db_name, uuid, aqi, temp, humidity, cloudy, lat, lon, time_data)
 
 
-mqttBroker ="mqtt.eclipseprojects.io"
-
-client = mqtt.Client("Smartphone")
-client.connect(mqttBroker)
+client = mqtt.Client(CLIENT_NAME)
+client.connect(MQTT_BROKER)
 
 client.loop_start()
 
-client.subscribe("morningside_heights/db1")
-client.on_message=on_message
+client.subscribe("morningside_heights/#")
+client.on_message = on_message
 
 time.sleep(30)
 client.loop_stop()
