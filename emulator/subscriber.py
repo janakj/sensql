@@ -19,9 +19,10 @@ def on_message(client, userdata, message):
     location_dict = json_dict['location']
     lat = location_dict['latitude']
     lon = location_dict['longitude']
+    loc = str((lat, lon))
     time_data = json_dict['timestamp']
     print("Data:", message.payload)
-    insert_row(db_name, uuid, aqi, temp, humidity, cloudy, lat, lon, time_data)
+    insert_row(db_name, uuid, aqi, temp, humidity, cloudy, loc, time_data)
 
 
 client = mqtt.Client(CLIENT_NAME)
