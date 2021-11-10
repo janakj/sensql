@@ -27,12 +27,6 @@ def on_message(client, userdata, message):
 client = mqtt.Client(CLIENT_NAME)
 client.connect(MQTT_BROKER)
 
-client.loop_start()
-
 client.subscribe("morningside_heights/#")
 client.on_message = on_message
-
-time.sleep(30)
-client.loop_stop()
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+client.loop_forever()
