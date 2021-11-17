@@ -1,6 +1,6 @@
 import time
 import math
-import datetime
+from datetime import datetime
 import json
 import re
 import sched
@@ -8,10 +8,12 @@ import schedule
 import paho.mqtt.client as mqtt
 from uuid import uuid4
 from random import randrange, uniform, choice
+import pytz
 
 MQTT_BROKER = "mqtt.eclipseprojects.io"
 CLIENT_NAME = "sensor_1"
 latitudes_arr = longitudes_arr = device_id_arr = []  # global arr
+TIMEZONE_SELECTION = pytz.timezone('America/New_York')
 
 
 def user_inputs():
@@ -109,7 +111,7 @@ def generate_payload(dev_index):
     rand_temp = int(uniform(65, 70))
     rand_humidity = int(uniform(65, 75))
     rand_cloudy = choice(['yes', 'no'])
-    timestamp = datetime.datetime.now()
+    timestamp = datetime.now(TIMEZONE_SELECTION)
     data = {}
     data["deviceId"] = device_id_arr[dev_index]
     data["aqi"] = rand_aqi
@@ -120,7 +122,7 @@ def generate_payload(dev_index):
     location["latitude"] = latitudes_arr[dev_index]
     location["longitude"] = longitudes_arr[dev_index]
     data["location"] = location
-    data["timestamp"] = timestamp.strftime("%m/%d/%Y, %H:%M:%S")
+    data["timestamp"] = str(timestamp)
 
     return json.dumps(data)  # encode object to JSON
 
