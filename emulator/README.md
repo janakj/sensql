@@ -1,6 +1,10 @@
 # IoT Devices Emulator
 IoT Devices Emulator for SenSQL research project
 # Description
+Why: In order to evaluate Presto, distributed SQL query engine, we needed to have databases with spatiotemporal sensor data
+<br>How: We achieved it by simulating the data in Python, publishing and subscribing to topics in MQTT, and populating PostgreSQL databases
+<br>What: Developed two programs in Python: publisher.py and subscriber.py.
+
 ## Publisher
 Publisher script emulates IoT devices and posts data to MQTT topics.
 <br><br> User inputs:
@@ -19,7 +23,10 @@ Publisher script emulates IoT devices and posts data to MQTT topics.
 <br> - timestamp, date and local time
 <br><br>Topic:
 <br>- /morningside_heights/dbx
-where x is db number that goes from 0 to max set by the user
+<br>where x is db number that goes from 0 to max set by the user
+<br><br>Scheduling:
+<br>- sched is used to randomly offset each device's start time
+<br>- schedule is used to schedule device's transmission on a set interval
 ## Subscriber
 Topic:
 <br>- /morningside_heights/dbx
