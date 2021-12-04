@@ -1,6 +1,6 @@
 import time
 import math
-import datetime
+from datetime import datetime
 import json
 import re
 import sched
@@ -8,10 +8,13 @@ import schedule
 import paho.mqtt.client as mqtt
 from uuid import uuid4
 from random import randrange, uniform, choice
+import pytz
+import os
 
 MQTT_BROKER = "mqtt.eclipseprojects.io"
 CLIENT_NAME = "sensor_1"
 latitudes_arr = longitudes_arr = device_id_arr = []  # global arr
+TIMEZONE_SELECTION = pytz.timezone('America/New_York')
 
 
 def user_inputs():
@@ -29,6 +32,7 @@ def user_inputs():
                 return num_devices_inp, num_databases_inp, lat_min_inp, lat_max_inp, lon_min_inp, lon_max_inp
             num_devices_inp = int(temp)
             num_databases_inp = int(input("Enter number of databases: "))
+
         except ValueError:
             print("[ERROR] Enter integer")
             continue
@@ -109,7 +113,7 @@ def generate_payload(dev_index):
     rand_temp = int(uniform(65, 70))
     rand_humidity = int(uniform(65, 75))
     rand_cloudy = choice(['yes', 'no'])
-    timestamp = datetime.datetime.now()
+    timestamp = datetime.now(TIMEZONE_SELECTION)
     data = {}
     data["deviceId"] = device_id_arr[dev_index]
     data["aqi"] = rand_aqi
@@ -120,7 +124,7 @@ def generate_payload(dev_index):
     location["latitude"] = latitudes_arr[dev_index]
     location["longitude"] = longitudes_arr[dev_index]
     data["location"] = location
-    data["timestamp"] = timestamp.strftime("%m/%d/%Y, %H:%M:%S")
+    data["timestamp"] = str(timestamp)
 
     return json.dumps(data)  # encode object to JSON
 
@@ -128,10 +132,31 @@ def generate_payload(dev_index):
 def publish(idx):
     data_out = generate_payload(idx)
     devices_per_db = num_devices // num_dbs
-    db_idx = (idx // devices_per_db) + 1
-    topic = "morningside_heights/db" + str(db_idx)
+    db_idx = (idx // devices_per_db)
+    topic = "morningside_heights/db/" + str(db_idx)
     client.publish(topic, data_out)
     print("Just published " + str(data_out) + " to topic " + topic)
+
+
+def generate_db_srv(db_id):
+    data = {}
+    data["db-id"] = db_id
+    data["action"] = "started"
+    dn = os.environ.get("DBNAME")
+    du = os.environ.get("DBUSER")
+    dp = os.environ.get("DBPASSWORD")
+    dh = os.environ.get("DBHOST")
+    dbp = int(os.environ.get("DBPORT")) + int(db_id)
+    data["db-cs"] = "dbname=%s user=%s password=%s host=%s port=%s" % (dn, du, dp, dh, dbp)
+    return json.dumps(data)  # encode object to JSON
+
+
+def publish_srv():
+    topic = "morningside_heights/srv"
+    for db_id in range(num_dbs):
+        data_out = generate_db_srv(db_id)
+        client.publish(topic, data_out)
+        print("Just published " + str(data_out) + " to topic " + topic)
 
 
 # helper function for schedule devices to specify what function to run and frequency
@@ -164,6 +189,7 @@ if __name__ == '__main__':
 
     client = mqtt.Client(CLIENT_NAME)
     client.connect(MQTT_BROKER)
+    publish_srv()
     schedule_devices(num_devices, 5, 5.0)
 
     # See PyCharm help at https://www.jetbrains.com/help/pycharm/
