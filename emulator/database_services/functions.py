@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import psycopg2
-
+import json
 
 def insert_row(cs, uuid, aqi, temp, humidity, cloudy, loc_dict, time_data):
     """ insert a new vendor into the vendors table """
@@ -14,15 +14,15 @@ def insert_row(cs, uuid, aqi, temp, humidity, cloudy, loc_dict, time_data):
         # create a new cursor
         cur = conn.cursor()
         # execute the INSERT statement
-        data = {"aqi": aqi,
+        data = json.dumps({"aqi": aqi,
                 "temperature": temp,
                 "humidity": humidity,
                 "cloudy": cloudy
-                }
-        cur.execute(sql, (time_data, "emulated", uuid, data, {
+                })
+        cur.execute(sql, (time_data, "emulated", uuid, data, json.dumps({
             "type": "Point",
             "coordinates": [loc_dict["longitude"], loc_dict["latitude"]]
-        }))
+        })))
         # commit the changes to the database
         conn.commit()
         # close communication with the database
