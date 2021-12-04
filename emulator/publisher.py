@@ -147,7 +147,7 @@ def generate_db_srv(db_id):
     dp = os.environ.get("DBPASSWORD")
     dh = os.environ.get("DBHOST")
     dbp = int(os.environ.get("DBPORT")) + int(db_id)
-    data["db-cs"] = "dbname=%s user=%s password=%s host=%s port=%s" % (dn, du, dp, dh, dbp)
+    data["db-url"] = "dbname=%s user=%s password=%s host=%s port=%s" % (dn, du, dp, dh, dbp)
     return json.dumps(data)  # encode object to JSON
 
 

@@ -5,7 +5,7 @@ import paho.mqtt.client as mqtt
 from database_services.functions import insert_row
 
 CLIENT_NAME = "Client"
-MQTT_BROKER = "mqtt.eclipseprojects.io"
+MQTT_BROKER = "localhost"
 db_dict = {}
 
 
@@ -14,7 +14,7 @@ def on_message(client, userdata, message):
     if message.topic == "morningside_heights/srv":
         db_id = json_dict['db-id']
         action = json_dict['action']
-        db_cs = json_dict['db-cs']
+        db_cs = json_dict['db-url']
         db_dict[db_id] = db_cs
         print("Data:", message.payload)
     else:
