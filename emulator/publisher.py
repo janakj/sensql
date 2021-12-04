@@ -11,7 +11,7 @@ from random import randrange, uniform, choice
 import pytz
 import os
 
-MQTT_BROKER = "mqtt.eclipseprojects.io"
+MQTT_BROKER = "localhost"
 CLIENT_NAME = "sensor_1"
 latitudes_arr = longitudes_arr = device_id_arr = []  # global arr
 TIMEZONE_SELECTION = pytz.timezone('America/New_York')

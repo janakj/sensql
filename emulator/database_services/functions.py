@@ -2,10 +2,10 @@
 import psycopg2
 
 
-def insert_row(cs, uuid, aqi, temp, humidity, cloudy, loc, time_data):
+def insert_row(cs, uuid, aqi, temp, humidity, cloudy, loc_dict, time_data):
     """ insert a new vendor into the vendors table """
-    sql = """INSERT INTO data(uuid, aqi, temperature, humidity, cloudy, location, timestamp)
-                VALUES(%s,%s,%s,%s,%s,%s,%s);"""
+    sql = """INSERT INTO measurements(timestamp, type, device, data, center)
+                VALUES(%s,%s,%s,%s,St_GeomFromGeoJSON(%s));"""
     conn = None
     try:
         # read database configuration
@@ -14,7 +14,15 @@ def insert_row(cs, uuid, aqi, temp, humidity, cloudy, loc, time_data):
         # create a new cursor
         cur = conn.cursor()
         # execute the INSERT statement
-        cur.execute(sql, (uuid, aqi, temp, humidity, cloudy, loc, time_data,))
+        data = {"aqi": aqi,
+                "temperature": temp,
+                "humidity": humidity,
+                "cloudy": cloudy
+                }
+        cur.execute(sql, (time_data, "emulated", uuid, data, {
+            "type": "Point",
+            "coordinates": [loc_dict["longitude"], loc_dict["latitude"]]
+        }))
         # commit the changes to the database
         conn.commit()
         # close communication with the database
