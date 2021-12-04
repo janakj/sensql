@@ -140,7 +140,7 @@ def publish(idx):
 
 def generate_db_srv(db_id):
     data = {}
-    data["db-id"] = db_id
+    data["db-id"] = "%s" % db_id
     data["action"] = "started"
     dn = os.environ.get("DBNAME")
     du = os.environ.get("DBUSER")

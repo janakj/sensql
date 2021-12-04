@@ -18,7 +18,7 @@ def on_message(client, userdata, message):
         db_dict[db_id] = db_cs
         print("Data:", message.payload)
     else:
-        db_id = int(re.search('[0-9]+', message.topic).group(0))
+        db_id = re.search('[0-9]+', message.topic).group(0)
         if db_id in db_dict:
             uuid = json_dict['deviceId']
             aqi = json_dict['aqi']
