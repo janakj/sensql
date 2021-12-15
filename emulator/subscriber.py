@@ -1,12 +1,13 @@
-import time
 import json
 import re
 import paho.mqtt.client as mqtt
-from database_services.functions import insert_row
+import multiprocessing
+from database_services.functions import MyDB
 
 CLIENT_NAME = "Client"
 MQTT_BROKER = "localhost"
-db_dict = {}
+my_databases = {}  # initialize database objects storage
+data_queues = {}  # store data in queues to process by each worker
 
 
 def on_message(client, userdata, message):
@@ -15,20 +16,18 @@ def on_message(client, userdata, message):
         db_id = json_dict['db-id']
         action = json_dict['action']
         db_cs = json_dict['db-url']
-        db_dict[db_id] = db_cs
         print("Data:", message.payload)
+        my_databases[db_id] = MyDB(db_cs)  # store database objects
+        data_queues[db_id] = multiprocessing.Queue()  # initialize queues for each process
+        process = multiprocessing.Process(  # spawn worker for this db
+            target=my_databases[db_id].insert_row, args=[data_queues[db_id]])  # insert data from queue
+        process.start()
     else:
         db_id = re.search('[0-9]+', message.topic).group(0)
-        if db_id in db_dict:
-            uuid = json_dict['deviceId']
-            aqi = json_dict['aqi']
-            temp = json_dict['temperature']
-            humidity = json_dict['humidity']
-            cloudy = json_dict['cloudy']
-            location_dict = json_dict['location']
-            time_data = json_dict['timestamp']
+        if db_id in my_databases:
             print("Data:", message.payload)
-            insert_row(db_dict[db_id], uuid, aqi, temp, humidity, cloudy, location_dict, time_data)
+            data_queues[db_id].put(json_dict)
+
 
 client = mqtt.Client(CLIENT_NAME)
 client.connect(MQTT_BROKER)
