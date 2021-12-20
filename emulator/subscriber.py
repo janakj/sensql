@@ -1,38 +1,40 @@
-import time
 import json
-import re
 import paho.mqtt.client as mqtt
-from database_services.functions import insert_row
+from database_services.functions import MyDB
+import argparse
 
-CLIENT_NAME = "Client"
 MQTT_BROKER = "localhost"
-db_dict = {}
+
+def process_cli_arguments():
+    parser = argparse.ArgumentParser(description='parse db_id and db_cs')
+    parser.add_argument('db_id', type=int,
+            help='A required integer positional argumenti db_id')
+    parser.add_argument('db_cs', type=str,
+            help='A required integer positional argument db_cs')
+    args = parser.parse_args()
+    return args.db_id, args.db_cs
+
+
+def on_connect(client, userdata, flags, rc):
+    client.subscribe("morningside_heights/db/" + str(db_id))
 
 
 def on_message(client, userdata, message):
     json_dict = json.loads(message.payload)
-    if message.topic == "morningside_heights/srv":
-        db_id = json_dict['db-id']
-        action = json_dict['action']
-        db_cs = json_dict['db-url']
-        db_dict[db_id] = db_cs
-        print("Data:", message.payload)
-    else:
-        db_id = re.search('[0-9]+', message.topic).group(0)
-        if db_id in db_dict:
-            uuid = json_dict['deviceId']
-            aqi = json_dict['aqi']
-            temp = json_dict['temperature']
-            humidity = json_dict['humidity']
-            cloudy = json_dict['cloudy']
-            location_dict = json_dict['location']
-            time_data = json_dict['timestamp']
-            print("Data:", message.payload)
-            insert_row(db_dict[db_id], uuid, aqi, temp, humidity, cloudy, location_dict, time_data)
+    uuid = json_dict['deviceId']
+    aqi = json_dict['aqi']
+    temp = json_dict['temperature']
+    humidity = json_dict['humidity']
+    cloudy = json_dict['cloudy']
+    location_dict = json_dict['location']
+    time_data = json_dict['timestamp']
+    print( message.payload)
+    MyDatabase.insert_row(uuid, aqi, temp, humidity, cloudy, location_dict, time_data)
 
-client = mqtt.Client(CLIENT_NAME)
-client.connect(MQTT_BROKER)
-client.subscribe("morningside_heights/srv")
-client.subscribe("morningside_heights/db/#")
+db_id, db_cs = process_cli_arguments()
+MyDatabase = MyDB(db_cs)
+client = mqtt.Client()
+client.on_connect = on_connect
 client.on_message = on_message
+client.connect(MQTT_BROKER)
 client.loop_forever()

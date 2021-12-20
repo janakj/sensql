@@ -23,7 +23,7 @@ def user_inputs():
         try:
             temp = input("Enter number of devices: ")
             if temp == 'test':
-                num_devices_inp = 100
+                num_devices_inp = 10000
                 num_databases_inp = 10
                 lat_min_inp = 40.802047
                 lat_max_inp = 40.817930
