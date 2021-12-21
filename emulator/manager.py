@@ -32,7 +32,10 @@ except KeyboardInterrupt:
 print("Terminating")
 
 for child in children:
-    child.kill()
+    child.terminate()
+
+for child in children:
+    child.wait()
 
 print("All terminated...")
 
