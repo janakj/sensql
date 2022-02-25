@@ -5,7 +5,7 @@
 -- Dumped from database version 13.5 (Debian 13.5-1.pgdg100+1)
 -- Dumped by pg_dump version 13.5 (Debian 13.5-1.pgdg100+1)
 
--- Started on 2021-12-03 09:46:06 EST
+-- Started on 2021-12-03 10:50:47 EST
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,7 +19,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 3902 (class 1262 OID 154265)
+-- TOC entry 3911 (class 1262 OID 154265)
 -- Name: geonaming; Type: DATABASE; Schema: -; Owner: postgres
 --
 
@@ -50,7 +50,7 @@ CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
 
 
 --
--- TOC entry 3903 (class 0 OID 0)
+-- TOC entry 3912 (class 0 OID 0)
 -- Dependencies: 2
 -- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: 
 --
@@ -67,7 +67,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 
 
 --
--- TOC entry 3904 (class 0 OID 0)
+-- TOC entry 3913 (class 0 OID 0)
 -- Dependencies: 3
 -- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
 --
@@ -76,7 +76,7 @@ COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UU
 
 
 --
--- TOC entry 1383 (class 1247 OID 155294)
+-- TOC entry 1385 (class 1247 OID 155294)
 -- Name: feature_t; Type: TYPE; Schema: public; Owner: postgres
 --
 
@@ -94,7 +94,7 @@ CREATE TYPE public.feature_t AS ENUM (
 ALTER TYPE public.feature_t OWNER TO postgres;
 
 --
--- TOC entry 932 (class 1255 OID 155389)
+-- TOC entry 933 (class 1255 OID 155389)
 -- Name: find_shape(uuid); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -128,7 +128,47 @@ $$;
 ALTER FUNCTION public.find_shape(feature_id uuid) OWNER TO postgres;
 
 --
--- TOC entry 934 (class 1255 OID 155391)
+-- TOC entry 936 (class 1255 OID 155628)
+-- Name: nodes_notify(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.nodes_notify() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+
+    if OLD is not null and NEW is null then
+        PERFORM pg_notify('nodes', json_build_object(
+            'action'        , 'delete',
+            'id'            , OLD.id,
+            'url'           , OLD.url,
+            'service_region', ST_AsGeoJSON(OLD.service_region)::jsonb
+        )::text);
+    elsif OLD is null and NEW is not null then
+        PERFORM pg_notify('nodes', json_build_object(
+            'action'        , 'insert',
+            'id'            , NEW.id,
+            'url'           , NEW.url,
+            'service_region', ST_AsGeoJSON(NEW.service_region)::jsonb
+        )::text);
+    else
+        PERFORM pg_notify('nodes', json_build_object(
+            'action'        , 'update',
+            'id'            , NEW.id,
+            'url'           , NEW.url,
+            'service_region', ST_AsGeoJSON(NEW.service_region)::jsonb
+        )::text);
+    end if;
+
+    return NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.nodes_notify() OWNER TO postgres;
+
+--
+-- TOC entry 935 (class 1255 OID 155391)
 -- Name: projective_transform(double precision[], double precision[]); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -151,7 +191,7 @@ $_$;
 ALTER FUNCTION public.projective_transform(matrix double precision[], coordinates double precision[]) OWNER TO postgres;
 
 --
--- TOC entry 933 (class 1255 OID 155390)
+-- TOC entry 934 (class 1255 OID 155390)
 -- Name: uncertainty_circle(public.geometry, real); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -261,6 +301,20 @@ CREATE TABLE public.feature (
 ALTER TABLE public.feature OWNER TO postgres;
 
 --
+-- TOC entry 214 (class 1259 OID 155611)
+-- Name: nodes; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.nodes (
+    id text NOT NULL,
+    url text NOT NULL,
+    service_region public.geometry(Polygon) NOT NULL
+);
+
+
+ALTER TABLE public.nodes OWNER TO postgres;
+
+--
 -- TOC entry 211 (class 1259 OID 155366)
 -- Name: raster_image; Type: TABLE; Schema: public; Owner: postgres
 --
@@ -297,7 +351,7 @@ CREATE TABLE public.shape (
 ALTER TABLE public.shape OWNER TO postgres;
 
 --
--- TOC entry 3738 (class 2606 OID 155353)
+-- TOC entry 3744 (class 2606 OID 155353)
 -- Name: control_point control_point_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -306,7 +360,7 @@ ALTER TABLE ONLY public.control_point
 
 
 --
--- TOC entry 3740 (class 2606 OID 155364)
+-- TOC entry 3746 (class 2606 OID 155364)
 -- Name: coordinate_transform coordinate_transform_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -315,7 +369,7 @@ ALTER TABLE ONLY public.coordinate_transform
 
 
 --
--- TOC entry 3744 (class 2606 OID 155387)
+-- TOC entry 3750 (class 2606 OID 155387)
 -- Name: device device_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -324,7 +378,7 @@ ALTER TABLE ONLY public.device
 
 
 --
--- TOC entry 3746 (class 2606 OID 155456)
+-- TOC entry 3752 (class 2606 OID 155456)
 -- Name: device_shape device_shape_device_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -333,7 +387,7 @@ ALTER TABLE ONLY public.device_shape
 
 
 --
--- TOC entry 3736 (class 2606 OID 155332)
+-- TOC entry 3742 (class 2606 OID 155332)
 -- Name: feature feature_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -342,7 +396,16 @@ ALTER TABLE ONLY public.feature
 
 
 --
--- TOC entry 3742 (class 2606 OID 155376)
+-- TOC entry 3754 (class 2606 OID 155618)
+-- Name: nodes nodes_idx; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.nodes
+    ADD CONSTRAINT nodes_idx UNIQUE (id);
+
+
+--
+-- TOC entry 3748 (class 2606 OID 155376)
 -- Name: raster_image raster_image_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -351,7 +414,7 @@ ALTER TABLE ONLY public.raster_image
 
 
 --
--- TOC entry 3734 (class 2606 OID 155318)
+-- TOC entry 3740 (class 2606 OID 155318)
 -- Name: shape shape_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -360,7 +423,15 @@ ALTER TABLE ONLY public.shape
 
 
 --
--- TOC entry 3747 (class 2606 OID 155333)
+-- TOC entry 3757 (class 2620 OID 155629)
+-- Name: nodes nodes_notify; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER nodes_notify AFTER INSERT OR DELETE OR UPDATE ON public.nodes FOR EACH ROW EXECUTE FUNCTION public.nodes_notify();
+
+
+--
+-- TOC entry 3755 (class 2606 OID 155333)
 -- Name: feature feature_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -369,7 +440,7 @@ ALTER TABLE ONLY public.feature
 
 
 --
--- TOC entry 3748 (class 2606 OID 155338)
+-- TOC entry 3756 (class 2606 OID 155338)
 -- Name: feature feature_shape_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -378,7 +449,7 @@ ALTER TABLE ONLY public.feature
 
 
 --
--- TOC entry 3886 (class 0 OID 155344)
+-- TOC entry 3895 (class 0 OID 155344)
 -- Dependencies: 209
 -- Name: control_point; Type: ROW SECURITY; Schema: public; Owner: postgres
 --
@@ -386,7 +457,7 @@ ALTER TABLE ONLY public.feature
 ALTER TABLE public.control_point ENABLE ROW LEVEL SECURITY;
 
 --
--- TOC entry 3892 (class 3256 OID 155354)
+-- TOC entry 3901 (class 3256 OID 155354)
 -- Name: control_point control_point_policy; Type: POLICY; Schema: public; Owner: postgres
 --
 
@@ -394,7 +465,7 @@ CREATE POLICY control_point_policy ON public.control_point USING ((uid = current
 
 
 --
--- TOC entry 3887 (class 0 OID 155355)
+-- TOC entry 3896 (class 0 OID 155355)
 -- Dependencies: 210
 -- Name: coordinate_transform; Type: ROW SECURITY; Schema: public; Owner: postgres
 --
@@ -402,7 +473,7 @@ CREATE POLICY control_point_policy ON public.control_point USING ((uid = current
 ALTER TABLE public.coordinate_transform ENABLE ROW LEVEL SECURITY;
 
 --
--- TOC entry 3893 (class 3256 OID 155365)
+-- TOC entry 3902 (class 3256 OID 155365)
 -- Name: coordinate_transform coordinate_transform_policy; Type: POLICY; Schema: public; Owner: postgres
 --
 
@@ -410,7 +481,7 @@ CREATE POLICY coordinate_transform_policy ON public.coordinate_transform USING (
 
 
 --
--- TOC entry 3889 (class 0 OID 155378)
+-- TOC entry 3898 (class 0 OID 155378)
 -- Dependencies: 212
 -- Name: device; Type: ROW SECURITY; Schema: public; Owner: postgres
 --
@@ -418,7 +489,7 @@ CREATE POLICY coordinate_transform_policy ON public.coordinate_transform USING (
 ALTER TABLE public.device ENABLE ROW LEVEL SECURITY;
 
 --
--- TOC entry 3895 (class 3256 OID 155388)
+-- TOC entry 3904 (class 3256 OID 155388)
 -- Name: device device_policy; Type: POLICY; Schema: public; Owner: postgres
 --
 
@@ -426,7 +497,7 @@ CREATE POLICY device_policy ON public.device USING ((uid = current_setting('sess
 
 
 --
--- TOC entry 3896 (class 3256 OID 155457)
+-- TOC entry 3905 (class 3256 OID 155457)
 -- Name: device_shape device_shape_policy; Type: POLICY; Schema: public; Owner: postgres
 --
 
@@ -434,7 +505,7 @@ CREATE POLICY device_shape_policy ON public.device_shape USING ((uid = current_s
 
 
 --
--- TOC entry 3885 (class 0 OID 155320)
+-- TOC entry 3894 (class 0 OID 155320)
 -- Dependencies: 208
 -- Name: feature; Type: ROW SECURITY; Schema: public; Owner: postgres
 --
@@ -442,7 +513,7 @@ CREATE POLICY device_shape_policy ON public.device_shape USING ((uid = current_s
 ALTER TABLE public.feature ENABLE ROW LEVEL SECURITY;
 
 --
--- TOC entry 3891 (class 3256 OID 155343)
+-- TOC entry 3900 (class 3256 OID 155343)
 -- Name: feature feature_policy; Type: POLICY; Schema: public; Owner: postgres
 --
 
@@ -450,7 +521,7 @@ CREATE POLICY feature_policy ON public.feature USING ((uid = current_setting('se
 
 
 --
--- TOC entry 3888 (class 0 OID 155366)
+-- TOC entry 3897 (class 0 OID 155366)
 -- Dependencies: 211
 -- Name: raster_image; Type: ROW SECURITY; Schema: public; Owner: postgres
 --
@@ -458,7 +529,7 @@ CREATE POLICY feature_policy ON public.feature USING ((uid = current_setting('se
 ALTER TABLE public.raster_image ENABLE ROW LEVEL SECURITY;
 
 --
--- TOC entry 3894 (class 3256 OID 155377)
+-- TOC entry 3903 (class 3256 OID 155377)
 -- Name: raster_image raster_image_policy; Type: POLICY; Schema: public; Owner: postgres
 --
 
@@ -466,7 +537,7 @@ CREATE POLICY raster_image_policy ON public.raster_image USING ((uid = current_s
 
 
 --
--- TOC entry 3884 (class 0 OID 155309)
+-- TOC entry 3893 (class 0 OID 155309)
 -- Dependencies: 207
 -- Name: shape; Type: ROW SECURITY; Schema: public; Owner: postgres
 --
@@ -474,7 +545,7 @@ CREATE POLICY raster_image_policy ON public.raster_image USING ((uid = current_s
 ALTER TABLE public.shape ENABLE ROW LEVEL SECURITY;
 
 --
--- TOC entry 3890 (class 3256 OID 155319)
+-- TOC entry 3899 (class 3256 OID 155319)
 -- Name: shape shape_policy; Type: POLICY; Schema: public; Owner: postgres
 --
 
@@ -482,7 +553,7 @@ CREATE POLICY shape_policy ON public.shape USING ((uid = current_setting('sessio
 
 
 --
--- TOC entry 3905 (class 0 OID 0)
+-- TOC entry 3914 (class 0 OID 0)
 -- Dependencies: 209
 -- Name: TABLE control_point; Type: ACL; Schema: public; Owner: postgres
 --
@@ -491,7 +562,7 @@ GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.control_point TO geo_api;
 
 
 --
--- TOC entry 3906 (class 0 OID 0)
+-- TOC entry 3915 (class 0 OID 0)
 -- Dependencies: 210
 -- Name: TABLE coordinate_transform; Type: ACL; Schema: public; Owner: postgres
 --
@@ -500,7 +571,7 @@ GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.coordinate_transform TO geo_ap
 
 
 --
--- TOC entry 3907 (class 0 OID 0)
+-- TOC entry 3916 (class 0 OID 0)
 -- Dependencies: 212
 -- Name: TABLE device; Type: ACL; Schema: public; Owner: postgres
 --
@@ -509,7 +580,7 @@ GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.device TO geo_api;
 
 
 --
--- TOC entry 3908 (class 0 OID 0)
+-- TOC entry 3917 (class 0 OID 0)
 -- Dependencies: 213
 -- Name: TABLE device_shape; Type: ACL; Schema: public; Owner: postgres
 --
@@ -518,7 +589,7 @@ GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.device_shape TO geo_api;
 
 
 --
--- TOC entry 3909 (class 0 OID 0)
+-- TOC entry 3918 (class 0 OID 0)
 -- Dependencies: 208
 -- Name: TABLE feature; Type: ACL; Schema: public; Owner: postgres
 --
@@ -527,7 +598,7 @@ GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.feature TO geo_api;
 
 
 --
--- TOC entry 3910 (class 0 OID 0)
+-- TOC entry 3919 (class 0 OID 0)
 -- Dependencies: 211
 -- Name: TABLE raster_image; Type: ACL; Schema: public; Owner: postgres
 --
@@ -536,7 +607,7 @@ GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.raster_image TO geo_api;
 
 
 --
--- TOC entry 3911 (class 0 OID 0)
+-- TOC entry 3920 (class 0 OID 0)
 -- Dependencies: 207
 -- Name: TABLE shape; Type: ACL; Schema: public; Owner: postgres
 --
@@ -544,7 +615,7 @@ GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.raster_image TO geo_api;
 GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.shape TO geo_api;
 
 
--- Completed on 2021-12-03 09:46:07 EST
+-- Completed on 2021-12-03 10:50:48 EST
 
 --
 -- PostgreSQL database dump complete
