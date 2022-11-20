@@ -153,3 +153,111 @@
     year={2008},
     urldate="2020-12-30"
 }
+
+@article{codd:relational,
+  author     = {Codd, E. F.},
+  title      = {A Relational Model of Data for Large Shared Data Banks},
+  year       = {1970},
+  issue_date = {June 1970},
+  publisher  = {Association for Computing Machinery},
+  address    = {New York, NY, USA},
+  volume     = {13},
+  number     = {6},
+  issn       = {0001-0782},
+  url        = {https://doi.org/10.1145/362384.362685},
+  doi        = {10.1145/362384.362685},
+  abstract   = {Future users of large data banks must be protected from having to know how the data is organized in the machine (the internal representation). A prompting service which supplies such information is not a satisfactory solution. Activities of users at terminals and most application programs should remain unaffected when the internal representation of data is changed and even when some aspects of the external representation are changed. Changes in data representation will often be needed as a result of changes in query, update, and report traffic and natural growth in the types of stored information.Existing noninferential, formatted data systems provide users with tree-structured files or slightly more general network models of the data. In Section 1, inadequacies of these models are discussed. A model based on n-ary relations, a normal form for data base relations, and the concept of a universal data sublanguage are introduced. In Section 2, certain operations on relations (other than logical inference) are discussed and applied to the problems of redundancy and consistency in the user's model.},
+  journal    = {Communications of the ACM},
+  month      = {jun},
+  pages      = {377--387},
+  numpages   = {11},
+  keywords   = {security, predicate calculus, composition, retrieval language, consistency, join, redundancy, derivability, networks of data, data organization, data integrity, hierarchies of data, relations, data bank, data structure, data base}
+}
+
+@article{cattell:scalable-sql,
+  author     = {Cattell, Rick},
+  title      = {Scalable SQL and NoSQL Data Stores},
+  year       = {2011},
+  issue_date = {December 2010},
+  publisher  = {Association for Computing Machinery},
+  address    = {New York, NY, USA},
+  volume     = {39},
+  number     = {4},
+  issn       = {0163-5808},
+  url        = {https://doi.org/10.1145/1978915.1978919},
+  doi        = {10.1145/1978915.1978919},
+  abstract   = {In this paper, we examine a number of SQL and socalled "NoSQL" data stores designed to scale simple OLTP-style application loads over many servers. Originally motivated by Web 2.0 applications, these systems are designed to scale to thousands or millions of users doing updates as well as reads, in contrast to traditional DBMSs and data warehouses. We contrast the new systems on their data model, consistency mechanisms, storage mechanisms, durability guarantees, availability, query support, and other dimensions. These systems typically sacrifice some of these dimensions, e.g. database-wide transaction consistency, in order to achieve others, e.g. higher availability and scalability.},
+  journal    = {SIGMOD Rec.},
+  month      = {may},
+  pages      = {12–27},
+  numpages   = {16}
+}
+
+@article{chang2008bigtable,
+  title     = {Bigtable: A distributed storage system for structured data},
+  author    = {Chang, Fay and Dean, Jeffrey and Ghemawat, Sanjay and Hsieh, Wilson C and Wallach, Deborah A and Burrows, Mike and Chandra, Tushar and Fikes, Andrew and Gruber, Robert E},
+  journal   = {ACM Transactions on Computer Systems (TOCS)},
+  volume    = {26},
+  number    = {2},
+  pages     = {1--26},
+  year      = {2008},
+  publisher = {ACM New York, NY, USA}
+}
+
+@article{decandia2007dynamo,
+  title     = {Dynamo: Amazon's highly available key-value store},
+  author    = {DeCandia, Giuseppe and Hastorun, Deniz and Jampani, Madan and Kakulapati, Gunavardhan and Lakshman, Avinash and Pilchin, Alex and Sivasubramanian, Swaminathan and Vosshall, Peter and Vogels, Werner},
+  journal   = {ACM SIGOPS operating systems review},
+  volume    = {41},
+  number    = {6},
+  pages     = {205--220},
+  year      = {2007},
+  publisher = {ACM New York, NY, USA}
+}
+
+@incollection{edward2015mongodb,
+  title     = {Mongodb architecture},
+  author    = {Edward, Shakuntala Gupta and Sabharwal, Navin},
+  booktitle = {Practical MongoDB},
+  pages     = {95--157},
+  year      = {2015},
+  publisher = {Springer}
+}
+
+@article{lakshman2010cassandra,
+  title     = {Cassandra: a decentralized structured storage system},
+  author    = {Lakshman, Avinash and Malik, Prashant},
+  journal   = {ACM SIGOPS Operating Systems Review},
+  volume    = {44},
+  number    = {2},
+  pages     = {35--40},
+  year      = {2010},
+  publisher = {ACM New York, NY, USA}
+}
+
+@article{corbett2013spanner,
+  title     = {Spanner: Google’s globally distributed database},
+  author    = {Corbett, James C and Dean, Jeffrey and Epstein, Michael and Fikes, Andrew and Frost, Christopher and Furman, Jeffrey John and Ghemawat, Sanjay and Gubarev, Andrey and Heiser, Christopher and Hochschild, Peter and others},
+  journal   = {ACM Transactions on Computer Systems (TOCS)},
+  volume    = {31},
+  number    = {3},
+  pages     = {1--22},
+  year      = {2013},
+  publisher = {ACM New York, NY, USA}
+}
+
+@inproceedings{taft2020cockroachdb,
+  title     = {Cockroachdb: The resilient geo-distributed sql database},
+  author    = {Taft, Rebecca and Sharif, Irfan and Matei, Andrei and VanBenschoten, Nathan and Lewis, Jordan and Grieger, Tobias and Niemi, Kai and Woods, Andy and Birzin, Anne and Poss, Raphael and others},
+  booktitle = {Proceedings of the 2020 ACM SIGMOD International Conference on Management of Data},
+  pages     = {1493--1509},
+  year      = {2020}
+}
+
+@online{mdx,
+  author  = {{Microsoft}},
+  title   = {{Multidimensional Expressions (MDX) language reference}},
+  url     = {https://learn.microsoft.com/en-us/sql/mdx/multidimensional-expressions-mdx-reference},
+  year    = 2022,
+  urldate = {2022-11-01}
+}
